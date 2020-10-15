@@ -4,7 +4,7 @@ import OpenGL.GL.shaders  # importa el set de shaders de OpenGL.
 import numpy as np
 import sys  # para hacer handling de eventos, como entradas del sistema, o cerrar el programa.
 from math import *
-
+import json
 # A class to store the application control
 class Controller:
     fillPolygon = True
