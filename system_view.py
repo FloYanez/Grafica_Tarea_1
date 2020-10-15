@@ -5,6 +5,8 @@ import numpy as np
 import sys  # para hacer handling de eventos, como entradas del sistema, o cerrar el programa.
 from math import *
 import json
+
+
 # A class to store the application control
 class Controller:
     fillPolygon = True
@@ -126,15 +128,52 @@ def createYellowTriangle():
 
     return gpuShape
 
-
-def createCircle(radius, sides, x0, y0):
+def createColorCircle(radio, sides, r, g, b):
+    # Here the new shape will be stored
     gpuShape = GPUShape()
-    glBegin(GL_POLYGON)
-    for i in range(100):
-        top = radius * cos(i * 2 * pi / sides) + x0
-        bottom = radius * sin(i * 2 * pi / sides) + y0
-        glVertex2f(top, bottom)
 
+    steps = pi / sides
+    t = np.arange(-np.pi, np.pi, steps)
+    x = radio * np.sin(t)
+    y = radio * np.cos(t)
+    # Defining locations and colors for each vertex of the shape
+    vertices = np.array([], dtype=np.float32)
+
+    for i in range(len(x)):
+        # Positions
+        np.append(vertices, x[i])
+        np.append(vertices, y[i])
+        np.append(vertices, 0.0)
+        # Colors
+        np.append(vertices, r)
+        np.append(vertices, g)
+        np.append(vertices, b)
+
+    # Defining connections among vertices
+    indices = np.array([], dtype=np.float32)
+    for i in range(len(x)):
+        np.append(indices, i)
+    np.append(indices, 0)
+
+    gpuShape.size = len(indices)
+
+    # VAO, VBO and EBO and  for the shape
+    gpuShape.vao = glGenVertexArrays(1)
+    gpuShape.vbo = glGenBuffers(1)
+    gpuShape.ebo = glGenBuffers(1)
+
+    # Vertex data must be attached to a Vertex Buffer Object (VBO)
+    glBindBuffer(GL_ARRAY_BUFFER, gpuShape.vbo)
+    # En este caso len(vertexData) * 4 porque cada dato tiene 4 bytes de mem.
+    # De hecho, se ve al revisar dtype=np.float32. Donde 32 = 4 * 8
+    glBufferData(GL_ARRAY_BUFFER, len(vertices) * 4, vertices, GL_STATIC_DRAW)
+
+    # Connections among vertices are stored in the Elements Buffer Object (EBO)
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gpuShape.ebo)
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, len(indices) * 4, indices, GL_STATIC_DRAW)
+
+    # return Shape(vertices, indices)
+    return gpuShape
 
 def createBody(color, radius, position):
     gpuShape = GPUShape()
@@ -238,6 +277,7 @@ if __name__ == "__main__":
 
     ### Create shapes
     gpuTriangle = createYellowTriangle()
+    gpuCircle = createColorCircle(1, 3, 0, 0, 0)
 
     while not glfw.window_should_close(window):
         # Using GLFW to check for input events
