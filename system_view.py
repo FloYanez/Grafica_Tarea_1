@@ -128,6 +128,7 @@ def createYellowTriangle():
 
     return gpuShape
 
+
 def createColorCircle(radio, sides, r, g, b):
     # Here the new shape will be stored
     gpuShape = GPUShape()
@@ -151,9 +152,12 @@ def createColorCircle(radio, sides, r, g, b):
 
     # Defining connections among vertices
     indices = np.array([], dtype=np.float32)
-    for i in range(len(x)):
-        np.append(indices, i)
-    np.append(indices, 0)
+    nodos = len(x)
+    for i in range(nodos):
+        if (i != 0) and (i != (nodos - 1)):
+            np.append(indices, 0)
+            np.append(indices, i)
+            np.append(indices, i + 1)
 
     gpuShape.size = len(indices)
 
@@ -174,6 +178,7 @@ def createColorCircle(radio, sides, r, g, b):
 
     # return Shape(vertices, indices)
     return gpuShape
+
 
 def createBody(color, radius, position):
     gpuShape = GPUShape()
@@ -299,12 +304,14 @@ if __name__ == "__main__":
             glUseProgram(shaderProgram2)
             # Telling OpenGL to draw our shapes using the previous shader program.
             drawShape(shaderProgram2, gpuTriangle)
+            drawShape(shaderProgram2, gpuCircle)
 
         else:
             # Telling OpenGL to use our shader program
             glUseProgram(shaderProgram)
             # Telling OpenGL to draw our shapes using the previous shader program.
             drawShape(shaderProgram, gpuTriangle)
+            drawShape(shaderProgram, gpuCircle)
 
         # Once the render is done, buffers are swapped, showing only the complete scene.
         glfw.swap_buffers(window)
