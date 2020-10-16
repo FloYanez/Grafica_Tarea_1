@@ -11,7 +11,6 @@ from PIL import Image
 
 import basic_shapes as bs
 
-
 # We will use 32 bits data, so we have 4 bytes
 # 1 byte = 8 bits
 SIZE_IN_BYTES = 4
@@ -28,8 +27,8 @@ class GPUShape:
 
 
 def textureSimpleSetup(texture, imgName, wrapMode, filterMode):
-     # wrapMode: GL_REPEAT, GL_CLAMP_TO_EDGE
-     # filterMode: GL_LINEAR, GL_NEAREST
+    # wrapMode: GL_REPEAT, GL_CLAMP_TO_EDGE
+    # filterMode: GL_LINEAR, GL_NEAREST
 
     glBindTexture(GL_TEXTURE_2D, texture)
 
@@ -81,18 +80,16 @@ def toGPUShape(shape, wrapMode=None, filterMode=None):
 
     if shape.textureFileName != None:
         assert wrapMode != None and filterMode != None
-        
+
         gpuShape.texture = glGenTextures(1)
         textureSimpleSetup(gpuShape.texture, shape.textureFileName, wrapMode, filterMode)
 
     return gpuShape
 
 
-
 class SimpleShaderProgram:
 
     def __init__(self):
-
         vertex_shader = """
             #version 130
 
@@ -122,7 +119,6 @@ class SimpleShaderProgram:
             OpenGL.GL.shaders.compileShader(vertex_shader, GL_VERTEX_SHADER),
             OpenGL.GL.shaders.compileShader(fragment_shader, GL_FRAGMENT_SHADER))
 
-
     def drawShape(self, shape, mode=GL_TRIANGLES):
         assert isinstance(shape, GPUShape)
 
@@ -135,7 +131,7 @@ class SimpleShaderProgram:
         position = glGetAttribLocation(self.shaderProgram, "position")
         glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, 24, ctypes.c_void_p(0))
         glEnableVertexAttribArray(position)
-        
+
         color = glGetAttribLocation(self.shaderProgram, "color")
         glVertexAttribPointer(color, 3, GL_FLOAT, GL_FALSE, 24, ctypes.c_void_p(12))
         glEnableVertexAttribArray(color)
@@ -147,7 +143,6 @@ class SimpleShaderProgram:
 class SimpleTextureShaderProgram:
 
     def __init__(self):
-
         vertex_shader = """
             #version 130
 
@@ -182,7 +177,6 @@ class SimpleTextureShaderProgram:
             OpenGL.GL.shaders.compileShader(vertex_shader, GL_VERTEX_SHADER),
             OpenGL.GL.shaders.compileShader(fragment_shader, GL_FRAGMENT_SHADER))
 
-
     def drawShape(self, shape, mode=GL_TRIANGLES):
         assert isinstance(shape, GPUShape)
 
@@ -196,7 +190,7 @@ class SimpleTextureShaderProgram:
         position = glGetAttribLocation(self.shaderProgram, "position")
         glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, 20, ctypes.c_void_p(0))
         glEnableVertexAttribArray(position)
-        
+
         texCoords = glGetAttribLocation(self.shaderProgram, "texCoords")
         glVertexAttribPointer(texCoords, 2, GL_FLOAT, GL_FALSE, 20, ctypes.c_void_p(12))
         glEnableVertexAttribArray(texCoords)
@@ -208,7 +202,6 @@ class SimpleTextureShaderProgram:
 class SimpleTransformShaderProgram:
 
     def __init__(self):
-
         vertex_shader = """
             #version 130
             
@@ -242,7 +235,6 @@ class SimpleTransformShaderProgram:
             OpenGL.GL.shaders.compileShader(vertex_shader, OpenGL.GL.GL_VERTEX_SHADER),
             OpenGL.GL.shaders.compileShader(fragment_shader, OpenGL.GL.GL_FRAGMENT_SHADER))
 
-
     def drawShape(self, shape, mode=GL_TRIANGLES):
         assert isinstance(shape, GPUShape)
 
@@ -255,7 +247,7 @@ class SimpleTransformShaderProgram:
         position = glGetAttribLocation(self.shaderProgram, "position")
         glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, 24, ctypes.c_void_p(0))
         glEnableVertexAttribArray(position)
-        
+
         color = glGetAttribLocation(self.shaderProgram, "color")
         glVertexAttribPointer(color, 3, GL_FLOAT, GL_FALSE, 24, ctypes.c_void_p(12))
         glEnableVertexAttribArray(color)
@@ -267,7 +259,6 @@ class SimpleTransformShaderProgram:
 class SimpleTextureTransformShaderProgram:
 
     def __init__(self):
-
         vertex_shader = """
             #version 130
 
@@ -304,7 +295,6 @@ class SimpleTextureTransformShaderProgram:
             OpenGL.GL.shaders.compileShader(vertex_shader, GL_VERTEX_SHADER),
             OpenGL.GL.shaders.compileShader(fragment_shader, GL_FRAGMENT_SHADER))
 
-
     def drawShape(self, shape, mode=GL_TRIANGLES):
         assert isinstance(shape, GPUShape)
 
@@ -318,7 +308,7 @@ class SimpleTextureTransformShaderProgram:
         position = glGetAttribLocation(self.shaderProgram, "position")
         glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, 20, ctypes.c_void_p(0))
         glEnableVertexAttribArray(position)
-        
+
         texCoords = glGetAttribLocation(self.shaderProgram, "texCoords")
         glVertexAttribPointer(texCoords, 2, GL_FLOAT, GL_FALSE, 20, ctypes.c_void_p(12))
         glEnableVertexAttribArray(texCoords)
@@ -330,7 +320,6 @@ class SimpleTextureTransformShaderProgram:
 class SimpleModelViewProjectionShaderProgram:
 
     def __init__(self):
-
         vertex_shader = """
             #version 130
             
@@ -364,7 +353,6 @@ class SimpleModelViewProjectionShaderProgram:
             OpenGL.GL.shaders.compileShader(vertex_shader, OpenGL.GL.GL_VERTEX_SHADER),
             OpenGL.GL.shaders.compileShader(fragment_shader, OpenGL.GL.GL_FRAGMENT_SHADER))
 
-
     def drawShape(self, shape, mode=GL_TRIANGLES):
         assert isinstance(shape, GPUShape)
 
@@ -377,7 +365,7 @@ class SimpleModelViewProjectionShaderProgram:
         position = glGetAttribLocation(self.shaderProgram, "position")
         glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, 24, ctypes.c_void_p(0))
         glEnableVertexAttribArray(position)
-        
+
         color = glGetAttribLocation(self.shaderProgram, "color")
         glVertexAttribPointer(color, 3, GL_FLOAT, GL_FALSE, 24, ctypes.c_void_p(12))
         glEnableVertexAttribArray(color)
@@ -389,7 +377,6 @@ class SimpleModelViewProjectionShaderProgram:
 class SimpleTextureModelViewProjectionShaderProgram:
 
     def __init__(self):
-
         vertex_shader = """
             #version 130
             
@@ -428,7 +415,6 @@ class SimpleTextureModelViewProjectionShaderProgram:
             OpenGL.GL.shaders.compileShader(vertex_shader, OpenGL.GL.GL_VERTEX_SHADER),
             OpenGL.GL.shaders.compileShader(fragment_shader, OpenGL.GL.GL_FRAGMENT_SHADER))
 
-
     def drawShape(self, shape, mode=GL_TRIANGLES):
         assert isinstance(shape, GPUShape)
 
@@ -442,11 +428,10 @@ class SimpleTextureModelViewProjectionShaderProgram:
         position = glGetAttribLocation(self.shaderProgram, "position")
         glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, 20, ctypes.c_void_p(0))
         glEnableVertexAttribArray(position)
-        
+
         texCoords = glGetAttribLocation(self.shaderProgram, "texCoords")
         glVertexAttribPointer(texCoords, 2, GL_FLOAT, GL_FALSE, 20, ctypes.c_void_p(12))
         glEnableVertexAttribArray(texCoords)
 
         # Render the active element buffer with the active shader program
         glDrawElements(mode, shape.size, GL_UNSIGNED_INT, None)
-
