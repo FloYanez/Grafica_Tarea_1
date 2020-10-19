@@ -20,10 +20,13 @@ class Cuerpo(object):
         self.distance = distance
         self.velocity = velocity
         self.padre = padre
-        self.satellites = satellites
+        self.satellites = satellites  # Lista de jsons
+        self.satelites = []
+        if satellites != "Null":
+            for cuerpo in satellites:
+                self.satelites.append(Cuerpo(cuerpo['Color'], cuerpo['Radius'], cuerpo['Distance'], cuerpo['Velocity'], cuerpo['Satellites']))
         self.x = 0
-        self.y = 0
-        self.alpha = 0
+        self.y = 1 * distance
         gpu_body_circle = es.toGPUShape(s.createColorCircle(*color))
 
         # Cuerpo
@@ -34,40 +37,52 @@ class Cuerpo(object):
         # Ensamble
         ensamble = sg.SceneGraphNode('ensamble')
         ensamble.childs += [body]
-
+        # Orbita
+        if self.distance != 0:
+            gpu_orbit_circumference = es.toGPUShape(s.createColorCircumference(*color))
+            orbit = sg.SceneGraphNode('orbit')
+            orbit.transform = tr.uniformScale(distance)
+            orbit.childs += [gpu_orbit_circumference]
+            ensamble.childs += [orbit]
         transform_ensamble = sg.SceneGraphNode('ensambleTR')
         transform_ensamble.childs += [ensamble]
 
         self.model = transform_ensamble
 
     def draw(self, pipeline):
+        self.model.transform = tr.translate(self.get_x(), self.get_y(), 0)
         sg.drawSceneGraphNode(self.model, pipeline, 'transform')
-
-    def get_alpha(self):
-        return self.alpha
-
-    def set_alpha(self, beta):
-        self.alpha = beta
 
     def set_x(self, x):
         self.x = x
 
+    def get_x(self):
+        return self.x
+
     def set_y(self, y):
         self.y = y
+
+    def get_y(self):
+        return self.y
 
     def get_distance(self):
         return self.distance
 
-    def update(self):
-        current_alpha = self.get_alpha()
-        if current_alpha == 2 * pi:
-            new_alpha = 0
-        else:
-            new_alpha = current_alpha + 2 * pi / 32
-        self.set_alpha(new_alpha)
+    def get_velocity(self):
+        return self.velocity
+
+    def update(self, t):
+        print("t = " + str(t))
         d = self.get_distance()
-        self.set_x(d * sin(self.get_alpha()))
-        self.set_y(d * cos(self.get_alpha()))
+        print("d = " + str(d))
+        w = self.get_velocity()
+        print("w = " + str(w))
+        new_x = d * sin(w * t)
+        new_y = d * cos(w * t)
+        print("x = " + str(new_x))
+        print("y = " + str(new_y))
+        self.set_x(new_x)
+        self.set_y(new_y)
 
 
 class Orbita():

@@ -13,6 +13,14 @@ import json
 from modelos import *
 from shaders import *
 
+#receives a system (json), meaning that it receives an element of the "data" list
+def system_reader(system):
+    bodies = []
+    for cuerpo in system:
+        bodies.append(Cuerpo(cuerpo['Color'], cuerpo['Radius'], cuerpo['Distance'], cuerpo['Velocity'], cuerpo['Satellites']))
+    return bodies
+
+
 def main(*args):
     bodies = args[0]
     data = {}
@@ -20,10 +28,12 @@ def main(*args):
         data = json.load(json_file)
     return data
 
-
 if __name__ == "__main__":
     data = main(*sys.argv[1:])  # argv[0] es el nombre de este archivo
-    print(data)
+    systems = []
+    for system in data:
+        systems.append(system_reader(system))
+
     # Initialize glfw
     if not glfw.init():
         sys.exit()
@@ -51,22 +61,25 @@ if __name__ == "__main__":
     glClearColor(23 / 255, 9 / 255, 54 / 255, 1.0)
 
     ### Create shapes
-    planeta = Cuerpo([1, 1, 0], 0.1, 0.5, 0.0, None)
-    orbita = Orbita(0, 0, 0.5)
+    #planeta = Cuerpo([1, 1, 0], 0.1, 0.5, 0.1, None)
+    #orbita = Orbita(0, 0, 0.5)
 
     # Acá se dibuja
     while not glfw.window_should_close(window):
+        # Calculamos el tiempo
+        ti = glfw.get_time()
         # Using GLFW to check for input events
         glfw.poll_events()
 
         # Clearing the screen in both, color and depth
         glClear(GL_COLOR_BUFFER_BIT)
-        planeta.update()
+
         # Dibujar modelos
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)  # linea
         orbita.draw(pipeline)
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)  # fill
         planeta.draw(pipeline)
+        planeta.update(ti)
 
         # Once the render is done, buffers are swapped, showing only the complete scene.
         glfw.swap_buffers(window)
