@@ -13,14 +13,6 @@ import json
 from modelos import *
 from shaders import *
 
-#receives a system (json), meaning that it receives an element of the "data" list
-def system_reader(system):
-    bodies = []
-    for cuerpo in system:
-        bodies.append(Cuerpo(cuerpo['Color'], cuerpo['Radius'], cuerpo['Distance'], cuerpo['Velocity'], cuerpo['Satellites']))
-    return bodies
-
-
 def main(*args):
     bodies = args[0]
     data = {}
@@ -30,9 +22,6 @@ def main(*args):
 
 if __name__ == "__main__":
     data = main(*sys.argv[1:])  # argv[0] es el nombre de este archivo
-    systems = []
-    for system in data:
-        systems.append(system_reader(system))
 
     # Initialize glfw
     if not glfw.init():
@@ -61,8 +50,7 @@ if __name__ == "__main__":
     glClearColor(23 / 255, 9 / 255, 54 / 255, 1.0)
 
     ### Create shapes
-    #planeta = Cuerpo([1, 1, 0], 0.1, 0.5, 0.1, None)
-    #orbita = Orbita(0, 0, 0.5)
+    planeta = Cuerpo([1, 1, 0], 0.1, 0.5, -0.4, "Null")
 
     # Acá se dibuja
     while not glfw.window_should_close(window):
@@ -75,9 +63,6 @@ if __name__ == "__main__":
         glClear(GL_COLOR_BUFFER_BIT)
 
         # Dibujar modelos
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)  # linea
-        orbita.draw(pipeline)
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)  # fill
         planeta.draw(pipeline)
         planeta.update(ti)
 
