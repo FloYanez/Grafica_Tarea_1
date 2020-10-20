@@ -34,7 +34,6 @@ def createColorCircle(r, g, b, radius=1):
             indices.append(0)
             indices.append(i)
             indices.append(i + 1)
-
     return Shape(vertices, indices)
 
 
@@ -62,7 +61,9 @@ def createColorCircumference(r, g, b, radius=1):
     # Defining connections among vertices
     indices = []
     nodos = len(x)
-    for i in range(nodos):
+    for i in range(nodos-2):
         indices.append(i)
+        indices.append(i+1)
+        indices.append(i+2)
 
     return Shape(vertices, indices)
