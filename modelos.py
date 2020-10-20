@@ -15,7 +15,6 @@ import easy_shaders as es
 
 class Cuerpo(object):
     def __init__(self, color, radius, distance, velocity, satellites, parent=None):
-        # Figuras básicas
         self.color = color
         self.radius = radius
         self.distance = distance
@@ -34,6 +33,7 @@ class Cuerpo(object):
         self.y = 1 * distance + self.parent_y
         self.zoom = 1
 
+        # Figuras básicas
         gpu_body_circle = es.toGPUShape(s.createColorCircle(*self.color))
         gpu_orbit_circumference = es.toGPUShape(s.createColorCircumference(*self.orbit_color))
 
