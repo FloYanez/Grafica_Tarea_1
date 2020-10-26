@@ -2,19 +2,9 @@
 Dibuja --> main
 """
 
-import glfw  # Usada para interactuar con un usuario (mouse, teclado, etc)
-from OpenGL.GL import *  # importa las funciones de OpenGL
-import OpenGL.GL.shaders  # importa el set de shaders de OpenGL.
 
-import basic_shapes
-import easy_shaders as es
-import numpy as np
-import sys  # para hacer handling de eventos, como entradas del sistema, o cerrar el programa.
-from math import *
 import json
-
-import shapes
-from modelos import *
+import basic_shapes as bs
 from controller import *
 
 
@@ -31,9 +21,8 @@ if __name__ == "__main__":
     if not glfw.init():
         sys.exit()
 
-    width = 600
-    height = 600
-
+    width  = 800
+    height = 800
 
     window = glfw.create_window(width, height, "Sistema Planetario", None, None)
 
@@ -50,8 +39,7 @@ if __name__ == "__main__":
 
     # Assembling the shader program (pipeline) with both shaders
     pipeline = es.SimpleTransformShaderProgram()
-    textureShaderProgram = es.SimpleTextureModelViewProjectionShaderProgram()
-    colorShaderProgram = es.SimpleModelViewProjectionShaderProgram()
+    pipeline2 = es.SimpleTextureTransformShaderProgram()
 
     # Telling OpenGL to use ou shader program
     glUseProgram(pipeline.shaderProgram)
@@ -59,8 +47,12 @@ if __name__ == "__main__":
     # Setting up the clear screen color
     glClearColor(23 / 255, 9 / 255, 54 / 255, 1.0)
 
+    # Our shapes here are always fully painted
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+    gpuShape = es.toGPUShape(bs.createTextureQuad("starry_sky.png", 1, 1), GL_REPEAT, GL_LINEAR)
+
     ### Create shapes
-    #gpuStars = es.to_gpu_shape(basic_shapes.creature_texture_quad('/static/starry_sky copy.png'), GL_REPEAT, GL_LINEAL)
+    # gpuStars = es.to_gpu_shape(basic_shapes.creature_texture_quad('/static/starry_sky copy.png'), GL_REPEAT, GL_LINEAL)
 
     data = main(*sys.argv[1:])  # argv[0] es el nombre de este archivo
     systems = []
@@ -73,6 +65,7 @@ if __name__ == "__main__":
         sun = Cuerpo(color, radius, distance, velocity, satellites)
         systems.append(sun)
         controller.set_model(sun)
+    controller.set_planet_list()
 
     # Acá se dibuja
     while not glfw.window_should_close(window):
@@ -84,7 +77,13 @@ if __name__ == "__main__":
         # Clearing the screen in both, color and depth
         glClear(GL_COLOR_BUFFER_BIT)
 
+        #Background
+        glUseProgram(pipeline2.shaderProgram)
+        glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, tr.uniformScale(2))
+        pipeline2.drawShape(gpuShape)
+
         # Dibujar modelos
+        glUseProgram(pipeline.shaderProgram)
         for system in systems:
             system.draw(pipeline)
             system.update(ti)
